@@ -25,7 +25,7 @@ const RegisterScreen = ({ navigation }) => {
     });
 
     try {
-      const response = await axios.post('http://localhost:5000/api/register', {
+      const response = await axios.post('http://192.168.23.97:5000/api/register', {
         firstName,
         lastName,
         email,
@@ -35,7 +35,7 @@ const RegisterScreen = ({ navigation }) => {
       // Handle successful registration (e.g., navigate to LoginScreen)
       navigation.navigate('LoginScreen');
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error('Registration error:', error.response ? error.response.data : error.message);
     }
   };
 

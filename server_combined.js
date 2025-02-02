@@ -39,6 +39,8 @@ app.use('/api/login', loginLimiter);
 app.post('/api/login', async (req, res) => {
   const { mobileNumber, password } = req.body;
 
+  console.log('Login attempt with data:', { mobileNumber, password });
+
   // Validate input
   if (!mobileNumber || !password) {
     return res.status(400).json({
@@ -65,6 +67,8 @@ app.post('/api/login', async (req, res) => {
 
       const user = results[0];
 
+      console.log('User found:', user);
+
       // Compare password
       const isValidPassword = await bcrypt.compare(password, user.password_hash);
 
@@ -73,6 +77,8 @@ app.post('/api/login', async (req, res) => {
       }
 
       // Generate JWT token
+      console.log('Generating token for user:', user.user_id);
+
       const token = jwt.sign(
         { userId: user.user_id, mobileNumber: user.phone_number },
         process.env.JWT_SECRET || 'your-secret-key',

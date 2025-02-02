@@ -135,6 +135,7 @@ const HomeScreen = ({ navigation }) => {
       </ImageBackground>
     );
   };
+  
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: COLORS.white}}>
       <StatusBar translucent={false} backgroundColor={COLORS.primary} />
@@ -150,7 +151,7 @@ const HomeScreen = ({ navigation }) => {
             paddingHorizontal: 20,
           }}>
           <View style={{flex: 1}}>
-            <Text style={style.headerTitle}>    MahaTourism</Text>
+            <Text style={style.headerTitle}>MahaTourism</Text>
             <View style={style.inputContainer}>
               <Icon name="search" size={28} />
               <TextInput
