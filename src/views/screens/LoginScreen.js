@@ -1,4 +1,3 @@
-// App.js
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -13,7 +12,7 @@ import {
   SafeAreaView
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import RegisterScreen from './RegisterScreen';
+import axios from 'axios'; // Import axios for API calls
 
 const Stack = createNativeStackNavigator();
 const { width, height } = Dimensions.get('window');
@@ -48,24 +47,23 @@ const IntroScreen = ({ navigation }) => {
   );
 };
 
-StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center', // Center vertically
-    alignItems: 'center',     // Center horizontally
-    backgroundColor: '#fff',   // Optional: background color for the screen
-  },
-  introText: {
-    fontSize: 24,             // Adjust font size
-    fontWeight: 'bold',       // Optional: bold text
-    color: '#333',            // Optional: text color
-  },
-})
-
-
 const LoginScreen = ({ navigation }) => {
   const [mobileNumber, setMobileNumber] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post('http://localhost:5000/api/login', {
+        mobileNumber,
+        password,
+      });
+      // Handle successful login (e.g., navigate to HomeScreen)
+      navigation.navigate('HomeScreen');
+    } catch (error) {
+      setErrorMessage('Invalid mobile number or password');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -77,6 +75,7 @@ const LoginScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.formContainer}>
+        {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
         <TextInput
           style={styles.input}
           placeholder="Mobile Number"
@@ -93,7 +92,7 @@ const LoginScreen = ({ navigation }) => {
           onChangeText={setPassword}
         />
 
-        <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate('HomeScreen')}>
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
           <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>
 
@@ -115,17 +114,15 @@ const LoginScreen = ({ navigation }) => {
   );
 };
 
-
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
   },
-  introText: {
-    fontSize: 42,
-    fontWeight: 'bold',
-    color: '#FF671F',
+  errorText: {
+    color: 'red',
+    marginBottom: 10,
+    textAlign: 'center',
   },
   headerContainer: {
     alignItems: 'center',
@@ -188,4 +185,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
 export default LoginScreen;
