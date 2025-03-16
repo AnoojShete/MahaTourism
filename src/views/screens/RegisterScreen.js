@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView } from 'react-native';
-import axios from 'axios';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Image } from 'react-native';
+import axios from 'axios'; // Import axios for API calls
 
 const RegisterScreen = ({ navigation }) => {
   const [firstName, setFirstName] = useState('');
@@ -11,8 +11,8 @@ const RegisterScreen = ({ navigation }) => {
 
   const handleRegister = async () => {
     // Input validation
-    if (!firstName || !email || !password) {
-      alert('First name, email, and password are required.');
+    if (!firstName || !lastName || !email || !password || !phoneNumber) {
+      Alert.alert('Error', 'All fields are required.');
       return;
     }
 
@@ -25,7 +25,8 @@ const RegisterScreen = ({ navigation }) => {
     });
 
     try {
-      const response = await axios.post('http://192.168.23.97:5000/api/register', {
+      // my device: 192.168.193.247
+      const response = await axios.post('http://192.168.90.247:5000/api/register', {
         firstName,
         lastName,
         email,
@@ -36,12 +37,21 @@ const RegisterScreen = ({ navigation }) => {
       navigation.navigate('LoginScreen');
     } catch (error) {
       console.error('Registration error:', error.response ? error.response.data : error.message);
+      Alert.alert('Error', 'Registration failed. Please try again later.');
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.headerText}>Register</Text>
+    <View style={styles.container}>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <Image source={require('../../assets/icons/backbutton.png')} style={styles.backIcon} />
+
+      </TouchableOpacity>
+
+      <View style={styles.headerContainer}>
+        <Text style={styles.headerText}>Register</Text>
+      </View>
+
       <TextInput
         style={styles.input}
         placeholder="First Name"
@@ -70,13 +80,14 @@ const RegisterScreen = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Phone Number"
+        keyboardType="phone-pad"
         value={phoneNumber}
         onChangeText={setPhoneNumber}
       />
       <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
         <Text style={styles.registerButtonText}>Register</Text>
       </TouchableOpacity>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -84,30 +95,56 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#f0f8ff', // Light blue background for a softer look
+    padding: 30, // Increased padding for better spacing
+  },
+  headerContainer: {
+    alignItems: 'center', // Center the header
+    marginBottom: 20,
+    marginTop: 15,
   },
   headerText: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: 'bold',
-    marginBottom: 20,
+    textAlign: 'center', // Center the text
   },
   input: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#e0e0e0', // Slightly darker input background
     borderRadius: 10,
     padding: 15,
     marginBottom: 15,
     fontSize: 16,
   },
   registerButton: {
-    backgroundColor: '#FF671F',
+    backgroundColor: '#FF8C00', // Brighter orange for the register button
+    shadowColor: '#000', // Adding shadow for depth
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
     borderRadius: 10,
     padding: 15,
     alignItems: 'center',
   },
+  backButton: {
+    position: 'absolute',
+    top: 30,
+    left: 5,
+    padding: 20,
+  },
+
+  backIcon: {
+    width: 30,
+    height: 30,
+  },
+
   registerButtonText: {
+
     color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 20, // Increased font size for better readability
+    fontWeight: 'bold', // Bold text for emphasis
   },
 });
 

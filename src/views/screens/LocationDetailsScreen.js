@@ -6,16 +6,25 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 const LocationDetailsScreen = ({ route, navigation }) => {
+  console.log('Location data:', route.params.location); // Debugging log
+
   const { location } = route.params;
 
-  const filteredPlaces = places.filter((place) => place.location === location);
+  const filteredPlaces = places.filter((place) => place.location === location); 
+  console.log('Filtered places:', filteredPlaces); // Debugging log
 
   const Card = ({ place }) => (
     <TouchableOpacity
       activeOpacity={0.8}
       onPress={() => navigation.navigate('DetailsScreen', place)}
     >
-      <ImageBackground source={place.image} style={styles.cardImage}>
+      <ImageBackground 
+        source={place.image} 
+        style={styles.cardImage} 
+        onLoadStart={() => console.log('Loading image:', place.image)}
+        onError={() => console.log('Error loading image:', place.image)}
+        defaultSource={require('../../assets/placeholder.png')} // Fallback image
+      >
         <View style={styles.cardContent}>
           <Text style={styles.cardTitle}>{place.name}</Text>
           <View style={styles.cardDetails}>

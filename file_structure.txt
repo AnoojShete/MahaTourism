@@ -1,0 +1,21 @@
+MahatTourism/
+│
+├── src/
+│   ├── views/
+│   │   ├── screens/
+│   │   │   ├── LocationScreen.js
+│   │   │   ├── ForgotPasswordScreen.js
+│   │   │   ├── BookingsScreen.js
+│   │   │   ├── FlightDetailsScreen.js
+│   │   │   ├── PaymentScreen.js
+│   │   │   ├── HomeScreen.js
+│   │   │   ├── RegisterScreen.js
+│   │   │   ├── LoginScreen.js
+│   │   │   └── FlightBookingScreen.js
+│   │   └── ...
+│   ├── consts/
+│   ├── assets/
+│   └── ...
+│
+├── server_combined.js
+└── App.js

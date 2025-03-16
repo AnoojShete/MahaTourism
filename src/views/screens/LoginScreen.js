@@ -9,7 +9,8 @@ import {
   TouchableOpacity, 
   Animated,
   Dimensions,
-  SafeAreaView
+  SafeAreaView,
+  Image,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import axios from 'axios'; // Import axios for API calls
@@ -51,11 +52,14 @@ const LoginScreen = ({ navigation }) => {
   const [mobileNumber, setMobileNumber] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+
   const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://192.168.23.97:5000/api/login', {
+      // my device - 192.168.193.247
+      // 192.168.64.247
+      const response = await axios.post('http://192.168.22.124:5000/api/login', {
         mobileNumber,
         password,
       });
@@ -63,6 +67,9 @@ const LoginScreen = ({ navigation }) => {
       navigation.navigate('HomeScreen');
     } catch (error) {
       setErrorMessage('Invalid mobile number or password');
+      
+      // dummy login
+      // navigation.navigate('HomeScreen');
     }
   };
 
@@ -85,16 +92,21 @@ const LoginScreen = ({ navigation }) => {
           onChangeText={setMobileNumber}
         />
         
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          secureTextEntry={!showPassword}
-          value={password}
-          onChangeText={setPassword}
-        />
-        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-          <Text>{showPassword ? 'Hide Password' : 'Show Password'}</Text>
-        </TouchableOpacity>
+        <View style={styles.passwordContainer}>
+          <TextInput
+            style={styles.passwordInput}
+            placeholder="Password"
+            secureTextEntry={!showPassword}
+            value={password}
+            onChangeText={setPassword}
+          />
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
+            <Image 
+              source={showPassword ? require('../../assets/icons/eyeshow.png') : require('../../assets/icons/eyehide.png')} 
+              style={styles.eyeIcon} 
+            />
+          </TouchableOpacity>
+        </View>
 
         <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
           <Text style={styles.loginButtonText}>Login</Text>
@@ -105,7 +117,7 @@ const LoginScreen = ({ navigation }) => {
         </TouchableOpacity>
 
         <View style={styles.linkContainer}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('ForgotPasswordScreen')}>
             <Text style={styles.link}>Forgot Password?</Text>
           </TouchableOpacity>
           
@@ -154,6 +166,27 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 16,
   },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  passwordInput: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 15,
+    fontSize: 16,
+  },
+  eyeButton: {
+    position: 'absolute',
+    right: 10,
+    top: 15,
+  },
+  eyeIcon: {
+    width: 24,
+    height: 24,
+  },
   loginButton: {
     backgroundColor: '#FF671F',
     borderRadius: 10,
@@ -174,10 +207,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderWidth: 1,
     borderColor: '#ddd',
-  },
-  googleButtonText: {
-    color: '#333',
-    fontSize: 18,
   },
   linkContainer: {
     flexDirection: 'row',

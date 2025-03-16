@@ -1,14 +1,9 @@
 const express = require('express');
-const mysql = require('mysql2');
+const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const twilio = require('twilio');
-const mailgun = require('mailgun-js'); // Import Mailgun
-
-
-
-const bcrypt = require('bcrypt'); // Ensure bcrypt is imported
-
+const bcrypt = require('bcrypt');
 const app = express();
 app.use(bodyParser.json());
 app.use(cors()); // Enable CORS for cross-origin requests
@@ -20,9 +15,10 @@ const PORT = process.env.PORT || 5000;
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'Anooj@23', // Replace with your MySQL password
+    password: 'Amit@12345', // Replace with your MySQL password
     database: 'mahatourism1', // Replace with your database name
 });
+
 db.connect((err) => {
     if (err) {
         console.error('Database connection failed:', err.message);
@@ -33,8 +29,7 @@ db.connect((err) => {
 
 // User Authentication
 app.post('/api/login', async (req, res) => {
-  const { mobileNumber, password } = req.body;
-
+  const { mobileNumber, password } = req.body;  
 
   console.log('Login attempt with data:', { mobileNumber, password });
 
@@ -67,19 +62,18 @@ app.post('/api/login', async (req, res) => {
       console.log('User found:', user);
 
       // Compare password
-      const isValidPassword = await bcrypt.compare(password, user.password_hash); // Compare password
-
+      const isValidPassword = await bcrypt.compare(password, user.password_hash);
 
       if (!isValidPassword) {
         return res.status(401).json({ error: 'Invalid mobile number or password' });
       }
 
-      // // Generate JWT token
-      // const token = jwt.sign(
-      //   { userId: user.user_id, mobileNumber: user.phone_number },
-      //   process.env.JWT_SECRET || 'your-secret-key',
-      //   { expiresIn: '7d' }
-      // );
+      // Generate JWT token
+      const token = jwt.sign(
+        { userId: user.user_id, mobileNumber: user.phone_number },
+        process.env.JWT_SECRET || 'your-secret-key',
+        { expiresIn: '7d' }
+      );
 
       // Return user data and token
       res.json({
@@ -90,7 +84,7 @@ app.post('/api/login', async (req, res) => {
           fullName: user.full_name,
           email: user.email
         },
-        // token
+        token
       });
     });
   } catch (error) {
@@ -109,8 +103,7 @@ app.post('/api/register', async (req, res) => {
     }
 
     // Hash the password
-  const passwordHash = await bcrypt.hash(password, 10); // Hashing the password
-
+    const passwordHash = await bcrypt.hash(password, 10);
 
     const sql = `
         INSERT INTO users (first_name, last_name, email, password_hash, phone_number)
@@ -123,45 +116,9 @@ app.post('/api/register', async (req, res) => {
     });
 });
 
-// Route to send confirmation email
-app.post('/api/send-confirmation-email', (req, res) => {
-    const { email, bookingDetails } = req.body; // Get email and booking details from request
-
-sgMail.setApiKey('YOUR_SENDGRID_API_KEY'); // Replace with your SendGrid API key
-
-// Email options
-const msg = {
-    to: email,
-    from: 'your-email@example.com', // Your verified SendGrid email
-    subject: 'Booking Confirmation',
-    text: `Your booking was successful! Details: ${JSON.stringify(bookingDetails)}`,
-};
-
-
-    // Email options
-    const mailOptions = {
-        from: 'mahatourismteam@gmail.com',
-        to: email,
-        subject: 'Booking Confirmation',
-        text: `Your booking was successful! Details: ${bookingDetails}`
-    };
-
-    // Send confirmation email
-    sgMail.send(msg)
-        .then(() => {
-            res.status(200).json({ message: 'Confirmation email sent!' });
-        })
-        .catch((error) => {
-            console.error('Error sending email:', error); // Log the specific error
-            res.status(500).json({ message: 'Failed to send confirmation email', error: error.message });
-        });
-
-});
-
 // Route to send confirmation code
 app.post('/api/send-confirmation-code', (req, res) => {
-  const { contact } = req.body; // This part can remain if you still want to send confirmation codes via SMS
-
+  const { contact } = req.body;
 
   // Check if the mobile number exists in the user table
   db.query('SELECT * FROM users WHERE phone_number = ?', [contact], (err, results) => {
@@ -180,8 +137,7 @@ app.post('/api/send-confirmation-code', (req, res) => {
         return res.status(500).json({ message: 'Database error' });
       }
 
-      // Send the confirmation code via SMS
-
+      // Send the confirmation code via SMS or email
       const client = twilio('TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN');
       client.messages.create({
         body: `Your confirmation code is: ${confirmationCode}`,
@@ -196,8 +152,7 @@ app.post('/api/send-confirmation-code', (req, res) => {
 
 // flights
 app.get('/api/airports', (req, res) => {
-  const query = 'SELECT iata_code, name, city FROM airports';
-
+  const query = 'SELECT * FROM airports';
   db.query(query, (err, results) => {
       if (err) {
           console.error('Database error:', err);

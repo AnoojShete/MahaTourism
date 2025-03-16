@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   },
   locationText: {
     fontSize: 16,
-    color: COLORS.grey,
+    color: COLORS.black,
     marginLeft: 12,
   },
 });
