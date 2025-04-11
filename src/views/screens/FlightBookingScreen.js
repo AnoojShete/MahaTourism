@@ -53,7 +53,8 @@ const FlightBookingScreen = () => {
         const flightsData = response.data.data.map(flightData => ({
           flight: {
             number: flightData.flight.number,
-            status: flightData.flight_status || 'scheduled',
+            // status: flightData.flight_status || 'scheduled',
+            status: 'scheduled',
             date: flightData.flight_date
           },
           airline: {
