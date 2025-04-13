@@ -265,6 +265,7 @@ const HotelSearchScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      
       <View style={styles.header}>
         <View style={styles.headerContent}>
           <View>

@@ -420,6 +420,51 @@ app.delete('/api/hotels/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to delete hotel' });
   }
 });
+
+// ITINERARY ROUTES
+app.get('/api/itinerary', async (req, res) => {
+  try {
+    const itineraries = await executeQuery('SELECT * FROM itinerary ORDER BY location_name');
+    res.json(itineraries);
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ error: 'Database error occurred' });
+  }
+});
+
+app.get('/api/itinerary/detail/:id', async (req, res) => {
+  const itineraryId = req.params.id;
+  console.log(`Fetching itinerary with ID: ${itineraryId}`);
+  
+  try {
+    const itineraries = await executeQuery('SELECT * FROM itinerary WHERE id = ?', [itineraryId]);
+    
+    console.log(`Query results:`, itineraries);
+    
+    if (itineraries.length === 0) {
+      return res.status(404).json({ error: 'Itinerary not found' });
+    }
+    
+    res.json(itineraries[0]);
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ error: 'Database error occurred' });
+  }
+});
+
+app.get('/api/itinerary/category/:category', async (req, res) => {
+  try {
+    const itineraries = await executeQuery(
+      'SELECT * FROM itinerary WHERE category = ? ORDER BY location_name',
+      [req.params.category]
+    );
+    res.json(itineraries);
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ error: 'Database error occurred' });
+  }
+});
+
 // ITINERARY ROUTES
 app.get('/api/itinerary', async (req, res) => {
   try {
